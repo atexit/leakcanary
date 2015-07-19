@@ -41,7 +41,7 @@ final class DisplayLeakAdapter extends BaseAdapter {
   private boolean[] opened = new boolean[0];
 
   private List<LeakTraceElement> elements = Collections.emptyList();
-  private String referenceKey;
+  private long referenceKey;
   private String referenceName = "";
 
   @Override public View getView(int position, View convertView, ViewGroup parent) {
@@ -135,8 +135,8 @@ final class DisplayLeakAdapter extends BaseAdapter {
     return htmlString;
   }
 
-  public void update(LeakTrace leakTrace, String referenceKey, String referenceName) {
-    if (referenceKey.equals(this.referenceKey)) {
+  public void update(LeakTrace leakTrace, long referenceKey, String referenceName) {
+    if (referenceKey == this.referenceKey) {
       // Same data, nothing to change.
       return;
     }

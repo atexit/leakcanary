@@ -17,18 +17,21 @@ package com.squareup.leakcanary;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.squareup.leakcanary.Preconditions.checkNotNull;
 
 /** @see {@link HeapDump#referenceKey}. */
 final class KeyedWeakReference extends WeakReference<Object> {
-  public final String key;
+
+  private static final AtomicInteger keyCount = new AtomicInteger(1);
+
+  public final long key;
   public final String name;
 
-  KeyedWeakReference(Object referent, String key, String name,
-      ReferenceQueue<Object> referenceQueue) {
+  KeyedWeakReference(Object referent, String name, ReferenceQueue<Object> referenceQueue) {
     super(checkNotNull(referent, "referent"), checkNotNull(referenceQueue, "referenceQueue"));
-    this.key = checkNotNull(key, "key");
+    this.key = keyCount.incrementAndGet();
     this.name = checkNotNull(name, "name");
   }
 }

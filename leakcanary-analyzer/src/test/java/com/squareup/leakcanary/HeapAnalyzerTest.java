@@ -69,7 +69,7 @@ public class HeapAnalyzerTest {
     ExcludedRefs.Builder excludedRefs = new ExcludedRefs.Builder();
     excludedRefs.thread(ASYNC_TASK_THREAD);
     excludedRefs.staticField(ASYNC_TASK_CLASS, EXECUTOR_FIELD);
-    AnalysisResult result = analyze(new HeapAnalyzer(excludedRefs.build(), excludedRefs.build()));
+    AnalysisResult result = analyze(new HeapAnalyzer(excludedRefs.build()));
     assertFalse(result.leakFound);
   }
 
@@ -78,6 +78,7 @@ public class HeapAnalyzerTest {
         .getContextClassLoader()
         .getResource("leak_asynctask.hprof")
         .getPath());
-    return heapAnalyzer.checkForLeak(heapDumpFile, "dc983a12-d029-4003-8890-7dd644c664c5");
+    // TODO Take new heap dump and fix.
+    return heapAnalyzer.checkForLeak(heapDumpFile, 42);
   }
 }

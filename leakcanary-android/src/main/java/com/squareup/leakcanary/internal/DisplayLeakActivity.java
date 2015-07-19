@@ -68,7 +68,7 @@ public final class DisplayLeakActivity extends Activity {
   private static final String TAG = "DisplayLeakActivity";
   private static final String SHOW_LEAK_EXTRA = "show_latest";
 
-  public static PendingIntent createPendingIntent(Context context, String referenceKey) {
+  public static PendingIntent createPendingIntent(Context context, long referenceKey) {
     Intent intent = new Intent(context, DisplayLeakActivity.class);
     intent.putExtra(SHOW_LEAK_EXTRA, referenceKey);
     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -77,7 +77,7 @@ public final class DisplayLeakActivity extends Activity {
 
   // null until it's been first loaded.
   private List<Leak> leaks;
-  private String visibleLeakRefKey;
+  private long visibleLeakRefKey;
 
   private ListView listView;
   private TextView failureView;
@@ -88,11 +88,11 @@ public final class DisplayLeakActivity extends Activity {
     super.onCreate(savedInstanceState);
 
     if (savedInstanceState != null) {
-      visibleLeakRefKey = savedInstanceState.getString("visibleLeakRefKey");
+      visibleLeakRefKey = savedInstanceState.getLong("visibleLeakRefKey");
     } else {
       Intent intent = getIntent();
       if (intent.hasExtra(SHOW_LEAK_EXTRA)) {
-        visibleLeakRefKey = intent.getStringExtra(SHOW_LEAK_EXTRA);
+        visibleLeakRefKey = intent.getLongExtra(SHOW_LEAK_EXTRA, 0);
       }
     }
 
@@ -117,7 +117,7 @@ public final class DisplayLeakActivity extends Activity {
 
   @Override protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putString("visibleLeakRefKey", visibleLeakRefKey);
+    outState.putLong("visibleLeakRefKey", visibleLeakRefKey);
   }
 
   @Override protected void onResume() {
@@ -153,15 +153,15 @@ public final class DisplayLeakActivity extends Activity {
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {
     if (item.getItemId() == android.R.id.home) {
-      visibleLeakRefKey = null;
+      visibleLeakRefKey = 0;
       updateUi();
     }
     return true;
   }
 
   @Override public void onBackPressed() {
-    if (visibleLeakRefKey != null) {
-      visibleLeakRefKey = null;
+    if (visibleLeakRefKey != 0) {
+      visibleLeakRefKey = 0;
       updateUi();
     } else {
       super.onBackPressed();
@@ -193,12 +193,12 @@ public final class DisplayLeakActivity extends Activity {
       return;
     }
     if (leaks.isEmpty()) {
-      visibleLeakRefKey = null;
+      visibleLeakRefKey = 0;
     }
 
     final Leak visibleLeak = getVisibleLeak();
     if (visibleLeak == null) {
-      visibleLeakRefKey = null;
+      visibleLeakRefKey = 0;
     }
 
     ListAdapter listAdapter = listView.getAdapter();
@@ -243,7 +243,7 @@ public final class DisplayLeakActivity extends Activity {
               File resultFile = leakResultFile(visibleLeak.heapDump.heapDumpFile);
               resultFile.delete();
               visibleLeak.heapDump.heapDumpFile.delete();
-              visibleLeakRefKey = null;
+              visibleLeakRefKey = 0;
               leaks.remove(visibleLeak);
               updateUi();
             }
@@ -293,7 +293,7 @@ public final class DisplayLeakActivity extends Activity {
       return null;
     }
     for (Leak leak : leaks) {
-      if (leak.heapDump.referenceKey.equals(visibleLeakRefKey)) {
+      if (leak.heapDump.referenceKey == visibleLeakRefKey) {
         return leak;
       }
     }

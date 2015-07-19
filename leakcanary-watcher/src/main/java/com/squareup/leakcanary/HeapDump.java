@@ -36,7 +36,7 @@ public final class HeapDump implements Serializable {
    * leaking object. Computing the shortest path to GC roots on that leaking object should enable
    * you to figure out the cause of the leak.
    */
-  public final String referenceKey;
+  public final long referenceKey;
 
   /**
    * User defined name to help identify the leaking instance.
@@ -51,10 +51,10 @@ public final class HeapDump implements Serializable {
   public final long gcDurationMs;
   public final long heapDumpDurationMs;
 
-  public HeapDump(File heapDumpFile, String referenceKey, String referenceName,
+  public HeapDump(File heapDumpFile, long referenceKey, String referenceName,
       ExcludedRefs excludedRefs, long watchDurationMs, long gcDurationMs, long heapDumpDurationMs) {
     this.heapDumpFile = checkNotNull(heapDumpFile, "heapDumpFile");
-    this.referenceKey = checkNotNull(referenceKey, "referenceKey");
+    this.referenceKey = referenceKey;
     this.referenceName = checkNotNull(referenceName, "referenceName");
     this.excludedRefs = checkNotNull(excludedRefs, "excludedRefs");
     this.watchDurationMs = watchDurationMs;

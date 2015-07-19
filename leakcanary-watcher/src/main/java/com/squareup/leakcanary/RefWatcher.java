@@ -18,7 +18,6 @@ package com.squareup.leakcanary;
 import java.io.File;
 import java.lang.ref.ReferenceQueue;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 
@@ -54,7 +53,7 @@ public final class RefWatcher {
   private final DebuggerControl debuggerControl;
   private final GcTrigger gcTrigger;
   private final HeapDumper heapDumper;
-  private final Set<String> retainedKeys;
+  private final Set<Long> retainedKeys;
   private final ReferenceQueue<Object> queue;
   private final HeapDump.Listener heapdumpListener;
   private final ExcludedRefs excludedRefs;
@@ -93,10 +92,9 @@ public final class RefWatcher {
       return;
     }
     final long watchStartNanoTime = System.nanoTime();
-    String key = UUID.randomUUID().toString();
-    retainedKeys.add(key);
     final KeyedWeakReference reference =
-        new KeyedWeakReference(watchedReference, key, referenceName, queue);
+        new KeyedWeakReference(watchedReference, referenceName, queue);
+    retainedKeys.add(reference.key);
 
     watchExecutor.execute(new Runnable() {
       @Override public void run() {
